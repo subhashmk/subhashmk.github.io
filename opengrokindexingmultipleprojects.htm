@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="chrome=1">
+      <title>Indexing multiple projects separately and having separate code search web applications for each project on a single web server</title>
+      <link rel="stylesheet" href="./css/styles.css">
+      <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+   </head>
+   <body>
+      <div class="wrapper">
+         <header>
+            <h1>Indexing multiple projects separately and having separate code search web applications for each project on a single web server</h1>
+            <p class="homelink"><a href="http://subhashmk.github.io/">&lt; Return to homepage</a></p>
+         </header>
+         <section>
+            <h2 id="introduction">Introduction</h2>
+            <p>This document will walk you through the setup of a OpenGrok. We will:</p>
+            <ol>
+               <li>Install required packages</li>
+               <li>Indexing source code</li>
+               <li>Deploying code search web application</li>
+            </ol>
+            <h2 id="requirements">Requirements:</h2>
+            <ol>
+               <li>Make sure <b>JDK 1.7</b> or higher is installed on your system. If not, install <b>jdk</b> using this command: 
+				 <pre class="highlight"><code>sudo apt-get install openjdk-7-jdk</code></pre>
+			   </li>
+               <li>Make sure <b>Exuberant Ctags</b> (for analysis) is installed on your system. If not, install <b>ctags</b> using this command:
+			     <pre class="highlight"><code>sudo apt-get install exuberant-ctags</code></pre>
+			   </li>
+               <li>Make sure <b>tomcat7</b> is installed on your system. If not, install <b>tomcat7</b> using this command:
+			     <pre class="highlight"><code>sudo apt-get install tomcat7</code></pre>
+			   </li>
+            </ol>
+            <h2 id="downloadopengrok">Download OpenGrok:</h2>
+            <p>download OpenGrok from <a href="https://java.net/projects/opengrok/downloads/download/opengrok-0.12.1.6.tar.gz">https://java.net/projects/opengrok/downloads/download/opengrok-0.12.1.2.tar.gz</a> and untar it.</p>
+            <h2 id="indexingsourcecode">Indexing Source Code:</h2>
+				<p>Here we will focus on indexing two projects and having two separate code search web applications for two projects. This will give enough idea to host as many code search web applications as we want.</p>
+				<h4>Creating directories required for indexing</h4>
+				<ol>
+				   <li>Create separate directories for each project for storing data of indexing.
+					 <pre class="highlight"><code>sudo mkdir /var/opengrok_a
+sudo mkdir /var/opengrok_b</code></pre>
+				   </li>
+				   <li>Make owner of these directories to yourself.
+					 <pre class="highlight"><code>sudo chown –R &lt;your_username&gt;:&lt;your_username_group&gt; /var/opengrok_a
+sudo chown –R &lt;your_username&gt;:&lt;your_username_group&gt; /var/opengrok_b</code></pre>
+					 <p>This is required, because you can’t write anything without sudo. Therefore you have to make yourself, the owner of the directory.</p>
+				   </li>
+				</ol>
+				<h4>Indexing source code</h4>
+				<p>If you are hosting multiple OpenGrok indexed project on separate web application, you have to provide some more information to index command. Because, by default, it uses all default information like index directory as /var/opengrok and web application name as /source. Since same name cannot used for multiple directories or web applications, you will have to provide those information explicitly so that index command shouldn't use default index directory path and default web application name.</p>
+				<ol>
+				   <li>Change to the <i>bin</i> directory of OpenGrok.
+					 <pre class="highlight"><code>cd opengrok/bin</code></pre>
+				   </li>
+				   <li>Index the both projects source code by issuing these commands.
+					 <pre class="highlight"><code>OPENGROK_INSTANCE_BASE=/var/opengrok_a OPENGROK_WEBAPP_CONTEXT=/project_a ./OpenGrok index &lt;path_of_project_a&gt;
+OPENGROK_INSTANCE_BASE=/var/opengrok_b OPENGROK_WEBAPP_CONTEXT=/project_b ./OpenGrok index &lt;path_of_project_b&gt;</code></pre>
+					 <p>Each command may take some times.</p>
+					 <p>Here <b>OPENGROK_INSTANCE_BASE</b> is a index directory and <b>OPENGROK_WEBAPP_CONTEXT</b> is a name of web application which you would like to set for each project.</p>
+				   </li>
+				</ol>
+            <h2 id="deploywebapp">Deploying Code Search Web Application:</h2>
+			<p>OpenGrok provides one web applicatiom (source.war) which can be used for code search. Since we want to have two separate code search web applications for two projects, we cannot use same webapp path (http://&lt;ip_address_of_your_system&gt;:8080/source/) for both projects. Means you will have to change source.war file and create two separate war files. Follow these steps to create two separate war files.</p>
+			<ol>
+			   <li>Create some temporary directory inside /tmp directory. Location can be anything.
+				 <pre class="highlight"><code>mkdir /tmp/code_search_webapp</code></pre>
+			   </li>
+			   <li>Unzip the source.war (web application) provided by OpenGrok to newly created directory.
+				 <pre class="highlight"><code>unzip opengrok-0.12.1.6/lib/source.war -d /tmp/code_search_webapp/</code></pre>
+			   </li>
+			   <li>Change to the newly created directory.
+				 <pre class="highlight"><code>cd /tmp/code_search_webapp</code></pre>
+			   </li>
+			   <li>Change the value of CONFIGURATION param. Existing value of CONFIGURATION param would be /var/opengrok/etc/configuration.xml. Considering this value for project A, new value would be /var/opengrok_a/etc/configuration.xml.
+			   </li>
+			   <li>Create the new war file for project A by issuing this command. Below "project_a" has to match with name given in OPENGROK_WEBAPP_CONTEXT variable of project A while indexing the source code. War file will be created in your home directory. War file path can be anything.
+				 <pre class="highlight"><code>zip -r ~/project_a.war .</code></pre>
+			   </li>
+			   <li>Again change the value of CONFIGURATION param. Considering this value for project B, new value would be /var/opengrok_b/etc/configuration.xml.
+			   </li>
+			   <li>Create the new war file for project B by issuing this command. Below "project_b" has to match with name given in OPENGROK_WEBAPP_CONTEXT variable of project B while indexing the source code. War file will be created in your home directory. Again war file path can be anything.
+				 <pre class="highlight"><code>zip -r ~/project_b.war .</code></pre>
+			   </li>
+			   <li>Copy both war files to tomcat webapps directory by issuing these commands.
+				 <pre class="highlight"><code>sudo cp ~/project_b.war /var/lib/tomcat7/webapps/
+sudo cp ~/project_b.war /var/lib/tomcat7/webapps/</code></pre>
+			   </li>
+			</ol>
+            <h2 id="restartingwebserver">Restarting Web Server:</h2>
+			<p>Once code indexing and web application deployment is done, restart the tomcat web server to take the effect using this command.</p>
+			<pre class="highlight"><code>sudo service tomcat7 restart</code></pre>
+			<p>Once web server is restarted, you can access the code search webapps using web browser. Use this url to access code search webapps.</p>
+			<pre class="highlight"><code>http://localhost:8080/project_a/ for project A and 
+http://localhost:8080/project_b/ for project B</code></pre>
+            <p><b>Note:</b> Indexing step can be done repeatedly, if you think that your code has been modified. If your has not updated, then you don't have to index your code repeatedly. After every indexing the code, you may have to restart the Tomcat server. For indexing your code, you may want to write a cron job.</p>
+         </section>
+      </div>
+   </body>
+</html>
