@@ -18,8 +18,8 @@
             <p>This document will walk you through the setup of a OpenGrok. We will:</p>
             <ol>
                <li>Install required packages</li>
-               <li>Indexing source code</li>
                <li>Deploying code search web application</li>
+               <li>Indexing source code</li>
             </ol>
             <h2 id="requirements">Requirements:</h2>
             <ol>
@@ -35,30 +35,30 @@
             </ol>
             <h2 id="downloadopengrok">Download OpenGrok:</h2>
             <p>download OpenGrok from <a href="http://java.net/projects/opengrok/downloads/download/opengrok-0.12.1.1.tar.gz">http://java.net/projects/opengrok/downloads/download/opengrok-0.12.1.1.tar.gz</a> and untar it.</p>
-            <h2 id="indexingsourcecode">Indexing Source Code:</h2>
-				<h4>Creating directory required for indexing</h4>
-				<ol>
-				   <li>Create a directory for storing data of indexing.
-					 <pre class="highlight"><code>sudo mkdir /var/opengrok</code></pre>
-				   </li>
-				   <li>Make owner of this directory to yourself.
-					 <pre class="highlight"><code>Sudo chown –R &lt;your_username&gt;:&lt;your_username_group&gt; /var/opengrok</code></pre>
-					 <p>This is required, because you can’t write anything without sudo. Therefore you have to make yourself, the owner of the directory.</p>
-				   </li>
-				</ol>
-				<h4>Indexing source code</h4>
-				<ol>
-				   <li>Change to the <i>bin</i> directory of OpenGrok.
-					 <pre class="highlight"><code>cd opengrok/bin</code></pre>
-				   </li>
-				   <li>Index the source code by issuing this command.
-					 <pre class="highlight"><code>./OpenGrok index &lt;path_of_source_code&gt;</code></pre>
-					 <p>This command may take some times.</p>
-				   </li>
-				</ol>
             <h2 id="deploywebapp">Deploying Code Search Web Application:</h2>
-				<p>OpenGrok provides one web applicatiom (source.war) which can be used for code search. This commands deploys that web application to tomcat webserver. Path of code search web application would be http://&lt;ip_address_of_your_system&gt;:8080/source/</p>
-				<pre class="highlight"><code>./OpenGrok deploy</code></pre>
+			<p>OpenGrok provides one web applicatiom (source.war) which can be used for code search. This commands deploys that web application to tomcat webserver. Path of code search web application would be http://&lt;ip_address_of_your_system&gt;:8080/source/</p>
+			<pre class="highlight"><code>./OpenGrok deploy</code></pre>
+            <h2 id="indexingsourcecode">Indexing Source Code:</h2>
+			<h4>Creating directory required for indexing</h4>
+			<ol>
+			   <li>Create a directory for storing data of indexing.
+				 <pre class="highlight"><code>sudo mkdir /var/opengrok</code></pre>
+			   </li>
+			   <li>Make owner of this directory to yourself.
+				 <pre class="highlight"><code>Sudo chown –R &lt;your_username&gt;:&lt;your_username_group&gt; /var/opengrok</code></pre>
+				 <p>This is required, because you can’t write anything without sudo. Therefore you have to make yourself, the owner of the directory.</p>
+			   </li>
+			</ol>
+			<h4>Indexing source code</h4>
+			<ol>
+			   <li>Change to the <i>bin</i> directory of OpenGrok.
+				 <pre class="highlight"><code>cd opengrok/bin</code></pre>
+			   </li>
+			   <li>Index the source code by issuing this command.
+				 <pre class="highlight"><code>./OpenGrok index &lt;path_of_source_code&gt;</code></pre>
+				 <p>This command may take some times.</p>
+			   </li>
+			</ol>
             <h2 id="restartingwebserver">Restarting Web Server:</h2>
 			<p>Once code indexing and web application deployment is done, restart the tomcat web server to take the effect using this command.</p>
 			<pre class="highlight"><code>sudo service tomcat7 restart</code></pre>

@@ -18,8 +18,8 @@
             <p>This document will walk you through the setup of a OpenGrok. We will:</p>
             <ol>
                <li>Install required packages</li>
-               <li>Indexing source code</li>
                <li>Deploying code search web application</li>
+               <li>Indexing source code</li>
             </ol>
             <h2 id="requirements">Requirements:</h2>
             <ol>
@@ -35,37 +35,11 @@
             </ol>
             <h2 id="downloadopengrok">Download OpenGrok:</h2>
             <p>download OpenGrok from <a href="https://java.net/projects/opengrok/downloads/download/opengrok-0.12.1.6.tar.gz">https://java.net/projects/opengrok/downloads/download/opengrok-0.12.1.2.tar.gz</a> and untar it.</p>
-            <h2 id="indexingsourcecode">Indexing Source Code:</h2>
-				<p>Here we will focus on indexing two projects and having two separate code search web applications for two projects. This will give enough idea to host as many code search web applications as we want.</p>
-				<h4>Creating directories required for indexing</h4>
-				<ol>
-				   <li>Create separate directories for each project for storing data of indexing.
-					 <pre class="highlight"><code>sudo mkdir /var/opengrok_a
-sudo mkdir /var/opengrok_b</code></pre>
-				   </li>
-				   <li>Make owner of these directories to yourself.
-					 <pre class="highlight"><code>sudo chown –R &lt;your_username&gt;:&lt;your_username_group&gt; /var/opengrok_a
-sudo chown –R &lt;your_username&gt;:&lt;your_username_group&gt; /var/opengrok_b</code></pre>
-					 <p>This is required, because you can’t write anything without sudo. Therefore you have to make yourself, the owner of the directory.</p>
-				   </li>
-				</ol>
-				<h4>Indexing source code</h4>
-				<p>If you are hosting multiple OpenGrok indexed project on separate web application, you have to provide some more information to index command. Because, by default, it uses all default information like index directory as /var/opengrok and web application name as /source. Since same name cannot used for multiple directories or web applications, you will have to provide those information explicitly so that index command shouldn't use default index directory path and default web application name.</p>
-				<ol>
-				   <li>Change to the <i>bin</i> directory of OpenGrok.
-					 <pre class="highlight"><code>cd opengrok/bin</code></pre>
-				   </li>
-				   <li>Index the both projects source code by issuing these commands.
-					 <pre class="highlight"><code>OPENGROK_INSTANCE_BASE=/var/opengrok_a OPENGROK_WEBAPP_CONTEXT=/project_a ./OpenGrok index &lt;path_of_project_a&gt;
-OPENGROK_INSTANCE_BASE=/var/opengrok_b OPENGROK_WEBAPP_CONTEXT=/project_b ./OpenGrok index &lt;path_of_project_b&gt;</code></pre>
-					 <p>Each command may take some times.</p>
-					 <p>Here <b>OPENGROK_INSTANCE_BASE</b> is a index directory and <b>OPENGROK_WEBAPP_CONTEXT</b> is a name of web application which you would like to set for each project.</p>
-				   </li>
-				</ol>
             <h2 id="deploywebapp">Deploying Code Search Web Application:</h2>
+			<p>Here we will focus on indexing two projects and having two separate code search web applications for two projects. This will give enough idea to host as many code search web applications as we want. Lets consider two projects which we want index are project A and project B.</p>
 			<p>OpenGrok provides one web applicatiom (source.war) which can be used for code search. Since we want to have two separate code search web applications for two projects, we cannot use same webapp path (http://&lt;ip_address_of_your_system&gt;:8080/source/) for both projects. Means you will have to change source.war file and create two separate war files. Follow these steps to create two separate war files.</p>
 			<ol>
-			   <li>Create some temporary directory inside /tmp directory. Location can be anything.
+			   <li>Create some temporary directory inside /tmp directory. This location can be anything.
 				 <pre class="highlight"><code>mkdir /tmp/code_search_webapp</code></pre>
 			   </li>
 			   <li>Unzip the source.war (web application) provided by OpenGrok to newly created directory.
@@ -74,19 +48,45 @@ OPENGROK_INSTANCE_BASE=/var/opengrok_b OPENGROK_WEBAPP_CONTEXT=/project_b ./Open
 			   <li>Change to the newly created directory.
 				 <pre class="highlight"><code>cd /tmp/code_search_webapp</code></pre>
 			   </li>
-			   <li>Change the value of CONFIGURATION param. Existing value of CONFIGURATION param would be /var/opengrok/etc/configuration.xml. Considering this value for project A, new value would be /var/opengrok_a/etc/configuration.xml.
+			   <li>Change the value of CONFIGURATION param. Existing value of CONFIGURATION param would be /var/opengrok/etc/configuration.xml. Assuming directory /var/opengrok_a for indexing of project A, new value of CONFIGURATION param would be /var/opengrok_a/etc/configuration.xml. Indexing data directory /var/opengrok_a can be any directory. Its upto you. Steps for creating this directory are given next section.
 			   </li>
-			   <li>Create the new war file for project A by issuing this command. Below "project_a" has to match with name given in OPENGROK_WEBAPP_CONTEXT variable of project A while indexing the source code. War file will be created in your home directory. War file path can be anything.
+			   <li>Create the new war file for project A by issuing this command. Below "project_a" will be name of your code search website (http://&lt;ip_address_of_your_system&gt;:8080/project_a/) for project A. Please specify the name you would like to have for code search website for project A. War file will be created in your home directory. War file path can be anything.
 				 <pre class="highlight"><code>zip -r ~/project_a.war .</code></pre>
 			   </li>
 			   <li>Again change the value of CONFIGURATION param. Considering this value for project B, new value would be /var/opengrok_b/etc/configuration.xml.
 			   </li>
-			   <li>Create the new war file for project B by issuing this command. Below "project_b" has to match with name given in OPENGROK_WEBAPP_CONTEXT variable of project B while indexing the source code. War file will be created in your home directory. Again war file path can be anything.
+			   <li>Create the new war file for project B by issuing this command. Below "project_b" will be name of your code search website (http://&lt;ip_address_of_your_system&gt;:8080/project_b/) for project B. Please specify the name you would like to have for code search website for project B. War file will be created in your home directory. Again war file path can be anything.
 				 <pre class="highlight"><code>zip -r ~/project_b.war .</code></pre>
 			   </li>
 			   <li>Copy both war files to tomcat webapps directory by issuing these commands.
 				 <pre class="highlight"><code>sudo cp ~/project_b.war /var/lib/tomcat7/webapps/
 sudo cp ~/project_b.war /var/lib/tomcat7/webapps/</code></pre>
+			   </li>
+			</ol>
+            <h2 id="indexingsourcecode">Indexing Source Code:</h2>
+			<h4>Creating directories required for indexing</h4>
+			<ol>
+			   <li>Create separate directories for each project for storing data of indexing.
+				 <pre class="highlight"><code>sudo mkdir /var/opengrok_a
+sudo mkdir /var/opengrok_b</code></pre>
+			   </li>
+			   <li>Make owner of these directories to yourself.
+				 <pre class="highlight"><code>sudo chown &lt;your_username&gt;:&lt;your_username_group&gt; /var/opengrok_a
+sudo chown &lt;your_username&gt;:&lt;your_username_group&gt; /var/opengrok_b</code></pre>
+				 <p>This is required, because you can’t write anything without sudo. Therefore you have to make yourself, the owner of the directory.</p>
+			   </li>
+			</ol>
+			<h4>Indexing source code</h4>
+			<p>If you are hosting multiple OpenGrok indexed project on separate web application, you have to provide some more information to index command. Because, by default, it uses all default information like index directory as /var/opengrok and web application name as /source. Since same name cannot used for multiple directories and web applications, you will have to provide those information explicitly so that index command shouldn't use default index directory and default web application name.</p>
+			<ol>
+			   <li>Change to the <i>bin</i> directory of OpenGrok.
+				 <pre class="highlight"><code>cd opengrok/bin</code></pre>
+			   </li>
+			   <li>Index the both projects source code by issuing these commands.
+				 <pre class="highlight"><code>OPENGROK_INSTANCE_BASE=/var/opengrok_a OPENGROK_WEBAPP_CONTEXT=/project_a ./OpenGrok index &lt;path_of_project_a&gt;
+OPENGROK_INSTANCE_BASE=/var/opengrok_b OPENGROK_WEBAPP_CONTEXT=/project_b ./OpenGrok index &lt;path_of_project_b&gt;</code></pre>
+				 <p>Each command may take some times.</p>
+				 <p>Here <b>OPENGROK_INSTANCE_BASE</b> is a index directory and <b>OPENGROK_WEBAPP_CONTEXT</b> is a name of web application which you have given while creating war files for each project.</p>
 			   </li>
 			</ol>
             <h2 id="restartingwebserver">Restarting Web Server:</h2>
