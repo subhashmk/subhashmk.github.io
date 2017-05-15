@@ -48,12 +48,12 @@
 			   <li>Change to the newly created directory.
 				 <pre class="highlight"><code>cd /tmp/code_search_webapp</code></pre>
 			   </li>
-			   <li>Change the value of CONFIGURATION param. Existing value of CONFIGURATION param would be /var/opengrok/etc/configuration.xml. Assuming directory /var/opengrok_a for indexing of project A, new value of CONFIGURATION param would be /var/opengrok_a/etc/configuration.xml. Indexing data directory /var/opengrok_a can be any directory. Its upto you. Steps for creating this directory are given next section.
+			   <li>Change the value of CONFIGURATION param of WEB-INF/web.xml file. Existing value of CONFIGURATION param would be /var/opengrok/etc/configuration.xml. Assuming directory /var/opengrok_a for indexing of project A, new value of CONFIGURATION param would be /var/opengrok_a/etc/configuration.xml. Indexing data directory /var/opengrok_a can be any directory. Its upto you. Steps for creating this directory are given next section.
 			   </li>
 			   <li>Create the new war file for project A by issuing this command. Below "project_a" will be name of your code search website (http://&lt;ip_address_of_your_system&gt;:8080/project_a/) for project A. Please specify the name you would like to have for code search website for project A. War file will be created in your home directory. War file path can be anything.
 				 <pre class="highlight"><code>zip -r ~/project_a.war .</code></pre>
 			   </li>
-			   <li>Again change the value of CONFIGURATION param. Considering this value for project B, new value would be /var/opengrok_b/etc/configuration.xml.
+			   <li>Again change the value of CONFIGURATION param of WEB-INF/web.xml file. Considering this value for project B, new value would be /var/opengrok_b/etc/configuration.xml.
 			   </li>
 			   <li>Create the new war file for project B by issuing this command. Below "project_b" will be name of your code search website (http://&lt;ip_address_of_your_system&gt;:8080/project_b/) for project B. Please specify the name you would like to have for code search website for project B. War file will be created in your home directory. Again war file path can be anything.
 				 <pre class="highlight"><code>zip -r ~/project_b.war .</code></pre>
